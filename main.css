@@ -1,0 +1,300 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Helvetica+Neue:wght@200;300&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+body.table-page {
+  background: #1a110a;
+  cursor: default;
+}
+
+/* ── Table scene ── */
+.table-scene {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  user-select: none;
+}
+
+.table-photo {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(160deg, rgba(255,245,220,0.06) 0%, rgba(0,0,0,0.22) 100%),
+    url("wood-table.jpg") center center / cover no-repeat;
+  filter: saturate(0.88) brightness(0.82);
+  transform: scale(1.04);
+}
+
+.table-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 22% 14%, rgba(255,220,140,0.13), transparent 35%),
+    radial-gradient(ellipse at 80% 80%, rgba(0,0,0,0.28), transparent 40%),
+    radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0.10), transparent 70%);
+  pointer-events: none;
+}
+
+/* ── Ambient light vignette ── */
+.table-scene::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 50% 40%,
+    transparent 38%,
+    rgba(10, 6, 2, 0.55) 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ── Books layout ── */
+.books-layout {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+}
+
+/* ── Individual book ── */
+.table-book {
+  position: absolute;
+  display: block;
+  width: min(32vw, 420px);
+  aspect-ratio: 0.72 / 1;
+  text-decoration: none;
+  cursor: grab;
+  transform-style: preserve-3d;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.5s ease, opacity 0.5s ease;
+  will-change: transform;
+  perspective: 800px;
+  touch-action: none;
+}
+
+.table-book:active {
+  cursor: grabbing;
+}
+
+.table-book.is-dragging {
+  cursor: grabbing !important;
+  transition: none !important;
+  z-index: 100 !important;
+}
+
+/* Default positions — overridden by JS/cookies */
+.book-back {
+  left: 22%;
+  top: 52%;
+  transform: translate(-50%, -50%) rotate(-18deg);
+  z-index: 1;
+}
+
+.book-middle {
+  left: 50%;
+  top: 48%;
+  transform: translate(-50%, -50%) rotate(-4deg);
+  z-index: 2;
+}
+
+.book-front {
+  left: 74%;
+  top: 53%;
+  transform: translate(-50%, -50%) rotate(16deg);
+  z-index: 3;
+}
+
+/* on hover, snap transition faster for live parallax feel */
+.table-book:hover {
+  transition: transform 0.12s ease, filter 0.3s ease;
+  z-index: 10 !important;
+}
+
+/* ── Glow ── */
+.book-glow {
+  position: absolute;
+  inset: -30px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 228, 170, 0.2) 0%,
+    rgba(255, 210, 120, 0.08) 40%,
+    transparent 70%
+  );
+  filter: blur(22px);
+  opacity: 0;
+  transition: opacity 1s ease;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.table-book:hover .book-glow {
+  opacity: 1;
+}
+
+/* ── Shadow hidden ── */
+.book-shadow {
+  display: none;
+}
+
+/* ── Book stack hidden — cover images are already mocked up ── */
+.book-stack {
+  display: none;
+}
+
+/* ── Book face — just the image, flat on the table ── */
+.book-face {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  background: transparent;
+  box-shadow: none;
+  transition: none;
+}
+
+.table-book:hover .book-face {
+  box-shadow: none;
+}
+
+.book-face img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+/* hover brightness */
+.table-book:not(:hover) {
+  filter: brightness(0.97);
+}
+
+/* ── Page transition overlay ── */
+.table-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(232, 220, 202, 0.97);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 20;
+  transition: opacity 0.8s ease;
+}
+
+body.is-leaving .table-overlay {
+  opacity: 1;
+}
+
+body.returned .table-overlay {
+  animation: fadeBackIn 0.95s ease forwards;
+}
+
+@keyframes fadeBackIn {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.table-book.return-focus {
+  animation: returnFocus 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes returnFocus {
+  0%   { opacity: 0; filter: blur(6px) brightness(1.2); }
+  100% { opacity: 1; filter: blur(0) brightness(1); }
+}
+
+/* ── Entry animation ── */
+.table-book {
+  animation: bookSettle 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.book-back   { animation-delay: 0.05s; }
+.book-middle { animation-delay: 0.18s; }
+.book-front  { animation-delay: 0.30s; }
+
+@keyframes bookSettle {
+  0%   { opacity: 0; filter: blur(4px); }
+  100% { opacity: 1; filter: blur(0); }
+}
+
+/* ── Hint label ── */
+.drag-hint {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 12px;
+  font-weight: 300;
+  letter-spacing: 0.22em;
+  color: rgba(255,240,210,0.38);
+  text-transform: uppercase;
+  pointer-events: none;
+  z-index: 5;
+  animation: hintFade 3.5s ease 2s both;
+}
+
+@keyframes hintFade {
+  0%   { opacity: 0; }
+  20%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ── Hint label ── */
+.drag-hint {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 12px;
+  font-weight: 300;
+  letter-spacing: 0.22em;
+  color: rgba(255,240,210,0.38);
+  text-transform: uppercase;
+  pointer-events: none;
+  z-index: 5;
+  white-space: nowrap;
+  animation: hintFade 4s ease 1.5s both;
+}
+
+@keyframes hintFade {
+  0%   { opacity: 0; }
+  20%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+@media (max-width: 1000px) {
+  .table-book { width: min(27vw, 270px); }
+  .book-back   { left: 24%; top: 55%; }
+  .book-middle { left: 50%; top: 49%; }
+  .book-front  { left: 74%; top: 55%; }
+}
+
+@media (max-width: 700px) {
+  .table-book { width: min(32vw, 190px); }
+  .book-stack { transform: translate(7px, 6px); }
+  .book-shadow { bottom: -14px; height: 18px; }
+}
+
+/* snap animation when layout cycles */
+.table-book.snapping {
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+              left      0.55s cubic-bezier(0.22, 1, 0.36, 1),
+              top       0.55s cubic-bezier(0.22, 1, 0.36, 1) !important;
+}

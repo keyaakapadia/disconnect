@@ -1,0 +1,122 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #f7f4ee;
+  font-family: Arial, sans-serif;
+}
+
+/* background video */
+
+#bg-video {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: -2;
+  pointer-events: none;
+  background: #000;
+}
+
+/* flipbook layout */
+
+.flipbook-viewport {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.flipbook-viewport .container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#book-shell {
+  position: relative;
+  display: inline-block;
+}
+
+.flipbook {
+  position: relative;
+  margin: 0 auto;
+}
+
+.flipbook .page {
+  background: transparent;
+  overflow: hidden;
+  box-shadow: 0 0 18px rgba(0, 0, 0, 0.22);
+  cursor: grab;
+}
+
+.flipbook .page:active {
+  cursor: grabbing;
+}
+
+/* image base */
+
+.flipbook .page img {
+  width: calc(100% + 30px);
+  height: calc(100% + 30px);
+  object-fit: cover;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+/* LEFT PAGE — crop all edges 15px uniformly */
+
+.flipbook .page.odd img {
+  margin-top: -15px;
+  margin-bottom: -15px;
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
+/* RIGHT PAGE — crop all edges 15px uniformly */
+
+.flipbook .page.even img {
+  margin-top: -15px;
+  margin-bottom: -15px;
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
+/* entry / exit overlays */
+
+.book-entry-overlay,
+.book-exit-overlay {
+  position: fixed;
+  inset: 0;
+  background: #f3e5cf;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.book-entry-overlay {
+  opacity: 1;
+  transition: opacity 1s ease;
+}
+
+body.ready .book-entry-overlay {
+  opacity: 0;
+}
+
+.book-exit-overlay {
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+body.exiting .book-exit-overlay {
+  opacity: 1;
+}
